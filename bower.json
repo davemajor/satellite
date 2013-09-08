@@ -16,7 +16,8 @@
         "h5bp-helpers": "~0.1.0",
         "font-awesome": "~3.2.1",
         "raphael":"~2.1.2",
-        "bootstrap":""
+        "bootstrap":"",
+        "bootstrap-slider": ""
     },
     "overrides": {
         "backbone": {
