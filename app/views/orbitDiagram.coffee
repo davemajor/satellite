@@ -1,26 +1,32 @@
+# 16,800 miles per hour at 400 miles above earth
+
 module.exports = class OrbitDiagramView extends Backbone.View
     className: 'orbitDiagram'
     template: require 'views/templates/orbitDiagram'
-    
+    changingSpeed = false
+    earthRadius = 3959
 
     initialize: ->
         @earthRotation = @model.get('earthRotation')
-        @speed = @model.get('speed')
+        @speed = @model.get('speed') / 1000000
         @center = @model.get('center')
         @altitude = @model.get('altitude')
 
         @render()
         _.bindAll @
         @listenTo @model, 'change', =>
+            @changingSpeed = true
             @setupOrbit()
             @animate()
 
     setupOrbit: ->
         @altitude = @model.get('altitude')
+        @speed = @model.get('speed') / 1000000
 
         ellipse = "M" + (@center.x - @altitude) +
         "," + @center.y + " a " + @altitude +
         "," + @altitude + " 0 1,1 0,0.1"
+
 
         if @orbit?
             @orbit.attr('path', ellipse)
@@ -40,7 +46,7 @@ module.exports = class OrbitDiagramView extends Backbone.View
         @satellite.animateAlong(
             @paper
             @orbit
-            distance * @speed
+            distance / @speed
             Infinity
             this
         )
@@ -103,6 +109,7 @@ module.exports = class OrbitDiagramView extends Backbone.View
             attrs
         if context.earth.attr()[0].attrs.hasOwnProperty("transform")
             currentRot = context.earth.attr()[0].attrs.transform[0][1]
+
         else
             currentRot = 0
         along = (currentRot / 360)
@@ -110,5 +117,12 @@ module.exports = class OrbitDiagramView extends Backbone.View
         moonanim = Raphael.animation(
             along: 1
             duration
+            "linear"
+            =>
+                if context.changingSpeed
+                    element.attr along: 0
+                    element.animateWith @earth, @earthAnim, moonanim.repeat(Infinity)
+                    context.changingSpeed = false
         )
-        element.animateWith @earth, @earthAnim, moonanim.repeat(repetitions)
+
+        element.animateWith @earth, @earthAnim, moonanim.repeat(1)

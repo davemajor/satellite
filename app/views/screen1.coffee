@@ -18,7 +18,7 @@ module.exports = class Screen1View extends Backbone.View
         perfectOrbit = new OrbitDiagramView(
             model: new OrbitModel
                 altitude: 120
-                speed: 60000 / ((2 * Math.PI) * 120)
+                speed: 12566.370614359172
                 earthRotation: 60000
                 center: {x: 150, y: 150}
         )
@@ -27,7 +27,7 @@ module.exports = class Screen1View extends Backbone.View
         slowOrbit = new OrbitDiagramView(
             model: new OrbitModel
                 altitude: 120
-                speed: 60000 / ((2 * Math.PI) * 120) * 2
+                speed: 9000
                 earthRotation: 60000
                 center: {x: 150, y: 150}
         )

@@ -26,10 +26,10 @@ module.exports = class MapView extends Backbone.View
             @orbit = options.orbit
             @earthRotation = @orbit.get('earthRotation')
             @orbitTime = @orbit.get('orbitTime')
-            @listenTo @orbit, 'change', @updateDrift, this
+            @listenTo @orbit, 'change', @updateSpeed, this
 
-    updateDrift: ->
-        @drift = @orbit.get('drift')
+    updateSpeed: ->
+        @speed = @orbit.get('speed')
         google.maps.event.addListenerOnce @map, 'idle', =>
             console.log "READY"
             @pan()
@@ -40,8 +40,10 @@ module.exports = class MapView extends Backbone.View
         @
 
     pan: ->
-        if @drift == 0
+        if @speed == @orbit.get('targetSpeed')
             return
+        console.log @orbitTime
+        console.log @earthRotation
         time = (new Date).getTime()
         delta = time - @deltaTime
         adjustedRotation = (@orbitTime / @earthRotation) * @earthRotation
