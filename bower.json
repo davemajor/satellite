@@ -17,7 +17,7 @@
         "font-awesome": "~3.2.1",
         "raphael":"~2.1.2",
         "bootstrap":"~3.0.0",
-        "bootstrap-slider": "~2.0.0"
+        "bootstrap-slider": "git://github.com/pammacdotnet/bootstrap-slider.git"
     },
     "overrides": {
         "backbone": {
