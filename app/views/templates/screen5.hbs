@@ -23,7 +23,12 @@
         </div>
         <div class="row">
           <div class='col-sm-12'>
-            <strong>Your speed:</strong> {{speed}} miles per hour
+            <strong>Your speed:</strong>
+            {{#if expression}}
+              <span class="mathquill">{{expression}}</span>
+            {{else}}
+              {{speed}} miles per hour
+            {{/if}}
           </div>
         </div>
         <div class="row">

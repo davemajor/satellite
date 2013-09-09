@@ -3,10 +3,11 @@ require 'lib/helpers'
 
 # Initialize Router
 require 'routers/main'
+@Satellite ?= {}
 
 AppView = require 'views/app'
 
 $ ->
     # Initialize Backbone History
     Backbone.history.start pushState: yes
-    app = new AppView
+    Satellite.AppView = new AppView

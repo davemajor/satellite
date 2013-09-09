@@ -11,8 +11,14 @@ module.exports = class Screen5View extends Backbone.View
         @render()
 
     render: ->
-        $(@el).html @template
+        params = {
             speed: @speed
+        }
+        if Satellite.Session?
+            params.expression = Satellite.Session.get('expression')
+        $(@el).html @template params
+        $('.mathquill').mathquill()
+
         @orbit = new OrbitDiagramView(
             model: new OrbitModel
                 altitude: 120
@@ -27,12 +33,22 @@ module.exports = class Screen5View extends Backbone.View
         $('.slider').slider(
             'orientation': 'vertical'
             'min': 150
-            'max': 300
+            'max': 350
             value: 240
         ).on('slide', (evt) =>
-            @orbit.model.set
-                altitude: evt.value / 2
+            @updateOrbit(evt.value / 2)
         )
+
+    updateOrbit: (value) ->
+        debugger
+        if Satellite.Session?
+            calc = new Calc(Satellite.Session.get('expression'))
+            speed = calc.eval(value)
+        else
+            speed = @speed
+        @orbit.model.set
+            altitude: value
+            speed: speed
 
     updateStatus: ->
         $('#orbitStatus').toggleClass 'perfect', @orbit.model.get('speed') == @orbit.model.get('targetSpeed')
