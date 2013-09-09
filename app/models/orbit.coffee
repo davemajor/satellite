@@ -1,31 +1,30 @@
+###
+    The earth is 110 pixels in diameter/ 55 in radius against 3963 miles in radius
+
+    The earth rotates at 1037.5109738480298 mph with a circumference of 24900.26337235271517 miles
+
+    altitude pixels are worth 2 miles
+###
+
 module.exports = class OrbitModel extends Backbone.Model
+
+    earthRotationDuration: 60000
+    earthRotationMPH: 1037.5109738480298
 
     initialize: ->
         @listenTo @, 'change', @setup
         @setup()
 
     setup: ->
-        @calcDrift()
-        @calcTargetSpeed()
+        @altitudeMiles = @get('altitude') / 2
+        @totalAltitudeMiles = 3963 + @altitudeMiles
+        @orbitCircumferenceMiles = (2 * Math.PI) * @totalAltitudeMiles
+        @orbitSpeedMPH = @orbitCircumferenceMiles / 24
+        @targetOrbitSpeedMPH = @orbitCircumferenceMiles / 24
 
-    calcDrift: ->
-        altitude = @get('altitude')
-        speed = @get('speed') / 1000000
-        earthRotation = @get('earthRotation')
+        if @get('speed')?
+            @orbitSpeedMPH = @attributes.speed
+        else
+            @attributes.speed = @orbitSpeedMPH
 
-        orbitDistance = (2 * Math.PI) * altitude
-        orbitTime = orbitDistance / speed
-        @set (
-            orbitTime: orbitTime
-            drift: orbitTime - earthRotation
-        )
-
-    calcTargetSpeed: ->
-        altitude = @get('altitude')
-        earthRotation = @get('earthRotation')
-        orbitDistance = (2 * Math.PI) * altitude
-
-        speed = orbitDistance / earthRotation
-        @set (
-            targetSpeed: speed * 1000000
-        )
+        @orbitDuration = ((@orbitCircumferenceMiles / @orbitSpeedMPH) / 24) * 60000

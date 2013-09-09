@@ -24,8 +24,8 @@ module.exports = class MapView extends Backbone.View
         _.bindAll this
         if options? and options.orbit
             @orbit = options.orbit
-            @earthRotation = @orbit.get('earthRotation')
-            @orbitTime = @orbit.get('orbitTime')
+            @earthRotation = @orbit.earthRotationDuration
+            @orbitDuration = @orbit.orbitDuration
             @listenTo @orbit, 'change', @updateSpeed, this
 
     updateSpeed: ->
@@ -40,14 +40,11 @@ module.exports = class MapView extends Backbone.View
         @
 
     pan: ->
-        if @speed == @orbit.get('targetSpeed')
-            return
-        console.log @orbitTime
-        console.log @earthRotation
+        # if @speed == @orbit.targetOrbitSpeedMPH
+        #     return
         time = (new Date).getTime()
         delta = time - @deltaTime
-        adjustedRotation = (@orbitTime / @earthRotation) * @earthRotation
-        movement = (delta / @orbitTime) * 360
+        movement = ((delta / @earthRotation) - (delta/@orbitDuration)) * 360
 
         @lng -= movement
         if @lng > 180

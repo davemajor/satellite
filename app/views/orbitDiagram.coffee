@@ -1,5 +1,3 @@
-# 16,800 miles per hour at 400 miles above earth
-
 module.exports = class OrbitDiagramView extends Backbone.View
     className: 'orbitDiagram'
     template: require 'views/templates/orbitDiagram'
@@ -21,7 +19,7 @@ module.exports = class OrbitDiagramView extends Backbone.View
 
     setupOrbit: ->
         @altitude = @model.get('altitude')
-        @speed = @model.get('speed') / 1000000
+        @speed = @model.get('speed')
 
         ellipse = "M" + (@center.x - @altitude) +
         "," + @center.y + " a " + @altitude +
@@ -42,11 +40,11 @@ module.exports = class OrbitDiagramView extends Backbone.View
         @satellite.stop()
 
         distance = @orbit.getTotalLength()
-
+        
         @satellite.animateAlong(
             @paper
             @orbit
-            distance / @speed
+            this.model.orbitDuration
             Infinity
             this
         )
@@ -64,10 +62,10 @@ module.exports = class OrbitDiagramView extends Backbone.View
         focus = Math.pow(@altitude * @altitude - @altitude * @altitude, 0.5)
         planet = @paper.image(
             "images/earth.png",
-            @center.x - focus - (125/2)
-            @center.y - (125/2)
-            125
-            125
+            @center.x - focus - (110/2)
+            @center.y - (110/2)
+            110
+            115
         ).attr(
             stroke: 0
             fill: "blue"
