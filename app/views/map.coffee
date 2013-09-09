@@ -49,6 +49,8 @@ module.exports = class MapView extends Backbone.View
     pan: ->
         # if @speed == @orbit.targetOrbitSpeedMPH
         #     return
+        if @map == null or @map == undefined
+            return
         time = (new Date).getTime()
         delta = time - @deltaTime
         movement = ((delta / @earthRotation) - (delta/@orbitDuration)) * 360
