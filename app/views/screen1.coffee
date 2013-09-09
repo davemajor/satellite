@@ -12,37 +12,50 @@ module.exports = class Screen1View extends Backbone.View
         @render()
 
     render: ->
-
         $(@el).html @template
 
-        perfectOrbit = new OrbitDiagramView(
+        @perfectOrbit = new OrbitDiagramView(
             model: new OrbitModel
                 altitude: 100
                 earthRotation: 60000
                 center: {x: 150, y: 150}
         )
-        $('#diagram1').html perfectOrbit.render().el
+        $('#diagram1').html @perfectOrbit.render().el
 
-        slowOrbit = new OrbitDiagramView(
+        @slowOrbit = new OrbitDiagramView(
             model: new OrbitModel
                 altitude: 100
-                speed: perfectOrbit.model.get('speed') - 325.325
+                speed: @perfectOrbit.model.get('speed') - 325.325
                 earthRotation: 60000
                 center: {x: 150, y: 150}
         )
-        $('#diagram2').html slowOrbit.render().el
+        $('#diagram2').html @slowOrbit.render().el
 
-        map1 = new MapView
+        @map1 = new MapView
             zoom: 6
-            orbit: perfectOrbit.model
-        $('#map1').html map1.render().el
+            orbit: @perfectOrbit.model
+        $('#map1').html @map1.render().el
 
-        map2 = new MapView
+        @map2 = new MapView
             zoom: 6
-            orbit: slowOrbit.model
-        $('#map2').html map2.render().el
+            orbit: @slowOrbit.model
+        $('#map2').html @map2.render().el
 
-        perfectOrbit.model.trigger 'change'
-        slowOrbit.model.trigger 'change'
+        @perfectOrbit.model.trigger 'change'
+        @slowOrbit.model.trigger 'change'
 
-        slowOrbit.model.get('earthRotation')
+        @slowOrbit.model.get('earthRotation')
+
+    close: ->
+        @map1.close()
+        @map2.close()
+        @slowOrbit.close()
+        @perfectOrbit.close()
+        $(@el).empty()
+        @unbind()
+        @undelegateEvents()
+    next: ->
+        Satellite.AppView.trigger 'next', {fromView: @}
+
+    events:
+        'click .action-next': 'next'

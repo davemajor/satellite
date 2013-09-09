@@ -35,6 +35,10 @@ module.exports = class OrbitDiagramView extends Backbone.View
                 'stroke-dasharray':'-'
             )
 
+    close: ->
+        @remove()
+        @unbind()
+
     animate: ->
         @earth.stop()
         @satellite.stop()

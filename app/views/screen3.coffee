@@ -5,7 +5,7 @@ module.exports = class Screen3View extends Backbone.View
     className: 'screen3'
     el: '.app'
     template: require 'views/templates/screen3'
-    speed: 12566.370614359172
+    speed: 725.2759432379867
 
     initialize: ->
         @render()
@@ -21,3 +21,23 @@ module.exports = class Screen3View extends Backbone.View
         )
         $('#diagram').html @orbit.render().el
         @orbit.model.trigger 'change'
+
+    didChangeTextarea: (evt) ->
+        if $(evt.target).val().length > 0
+            $('.action-next').removeAttr 'disabled'
+        else
+            $('.action-next').attr 'disabled', true
+
+    close: ->
+        # @map1.close()
+        @orbit.close()
+        $(@el).empty()
+        @unbind()
+        @undelegateEvents()
+
+    next: ->
+        Satellite.AppView.trigger 'next', {fromView: @}
+
+    events:
+        'keyup .useful-information': 'didChangeTextarea'
+        'click .action-next' : 'next'

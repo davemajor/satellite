@@ -1,12 +1,12 @@
 OrbitDiagramView = require 'views/orbitDiagram'
 OrbitModel = require 'models/orbit'
-# Calc = require 'lib/calc'
 
 module.exports = class Screen4View extends Backbone.View
     className: 'screen4'
     el: '.app'
     template: require 'views/templates/screen4'
-    speed: 12566.370614359172
+    template2: require 'views/templates/screen4alt'
+    speed: 725.2759432379867
     latex: undefined
     altitude: 120
 
@@ -14,14 +14,19 @@ module.exports = class Screen4View extends Backbone.View
         @render()
 
     render: ->
-        $(@el).html @template
+        orbitModel = new OrbitModel
+            altitude: 120
             speed: @speed
+            earthRotation: 60000
+            center: {x: 200, y: 200}
+
+        if Satellite.Session.get('speed')?
+            $(@el).html @template2 orbitModel.attributes
+        else
+            $(@el).html @template orbitModel.attributes
+
         @orbit = new OrbitDiagramView(
-            model: new OrbitModel
-                altitude: 120
-                speed: @speed
-                earthRotation: 60000
-                center: {x: 200, y: 200}
+            model: orbitModel
         )
         $('#diagram').html @orbit.render().el
         @orbit.model.on 'change', @updateStatus, this
@@ -31,9 +36,9 @@ module.exports = class Screen4View extends Backbone.View
         @updateExpression()
 
     updateStatus: ->
-        $('#orbitStatus').toggleClass 'perfect', @orbit.model.get('speed') == @orbit.model.get('targetSpeed')
-        $('#orbitStatus').toggleClass 'toofast', @orbit.model.get('speed') > @orbit.model.get('targetSpeed')
-        $('#orbitStatus').toggleClass 'tooslow', @orbit.model.get('speed') < @orbit.model.get('targetSpeed')
+        $('#orbitStatus').toggleClass 'perfect', @orbit.model.get('speed') == @orbit.model.targetOrbitSpeedMPH
+        $('#orbitStatus').toggleClass 'toofast', @orbit.model.get('speed') >  @orbit.model.targetOrbitSpeedMPH
+        $('#orbitStatus').toggleClass 'tooslow', @orbit.model.get('speed') <  @orbit.model.targetOrbitSpeedMPH
 
     updateExpression: ->
         latex = $('.speed-expression').mathquill('latex')
@@ -45,7 +50,10 @@ module.exports = class Screen4View extends Backbone.View
         else
             exp = new Calc(latex)
             if exp.valid
-                evaled = exp.eval(@altitude)
+                if Satellite.Session.get('speed')?
+                    evaled = exp.eval(@altitude)
+                else
+                    evaled = exp.eval()
                 if evaled != undefined and !_.isNaN evaled
                     @speed = evaled
                     $('.calculated-speed .speed').text(evaled.toFixed(2))
@@ -56,15 +64,32 @@ module.exports = class Screen4View extends Backbone.View
         $('.speed-expression').toggleClass('invalid', invalid)
         $('.calculated-speed').toggle(!invalid)
         if invalid
-            $('button').attr 'disabled','true'
+            $('.action-update-speed').attr 'disabled','true'
         else
-            $('button').removeAttr 'disabled'
+            $('.action-update-speed').removeAttr 'disabled'
 
     updateOrbit: ->
         @orbit.model.set
-            speed: @speed * 1000000
+            speed: @speed
         @updateStatus()
+
+    close: ->
+        # @map1.close()
+        @orbit.close()
+        $(@el).empty()
+        @unbind()
+        @undelegateEvents()
+    next: ->
+        if Satellite.Session.get('speed')?
+            # Second time round, so save expression
+            Satellite.Session.set
+                expression: $('.speed-expression').mathquill('latex')
+        else
+            Satellite.Session.set
+                speed: @speed
+        Satellite.AppView.trigger 'next', {fromView: @}
 
     events:
         'keyup .speed-expression': 'updateExpression'
-        'click button': 'updateOrbit'
+        'click .action-update-speed': 'updateOrbit'
+        'click .action-next': 'next'

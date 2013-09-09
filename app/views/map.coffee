@@ -39,6 +39,12 @@ module.exports = class MapView extends Backbone.View
         @map = new google.maps.Map(@el, @mapOptions)
         @
 
+    close: ->
+        clearTimeout @timer
+        @remove()
+        @unbind()
+        @map = null
+
     pan: ->
         # if @speed == @orbit.targetOrbitSpeedMPH
         #     return
@@ -55,4 +61,4 @@ module.exports = class MapView extends Backbone.View
         @map.panTo new google.maps.LatLng(@lat, @lng)
         @deltaTime = time
 
-        setTimeout @pan, @updateTime
+        @timer = setTimeout @pan, @updateTime
