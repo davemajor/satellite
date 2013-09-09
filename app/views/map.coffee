@@ -30,8 +30,9 @@ module.exports = class MapView extends Backbone.View
 
     updateSpeed: ->
         @speed = @orbit.get('speed')
+        @earthRotation = @orbit.earthRotationDuration
+        @orbitDuration = @orbit.orbitDuration
         google.maps.event.addListenerOnce @map, 'idle', =>
-            console.log "READY"
             @pan()
 
     render: ->

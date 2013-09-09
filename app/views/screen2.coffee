@@ -1,5 +1,6 @@
 OrbitDiagramView = require 'views/orbitDiagram'
 OrbitModel = require 'models/orbit'
+MapView = require 'views/map'
 
 module.exports = class Screen2View extends Backbone.View
     className: 'screen2'
@@ -24,6 +25,12 @@ module.exports = class Screen2View extends Backbone.View
                 center: {x: 150, y: 150}
         )
         $('#diagram').html @orbit.render().el
+
+        @map = new MapView
+            zoom: 6
+            orbit: @orbit.model
+        $('#map').html @map.render().el
+
         @orbit.model.trigger 'change'
 
     updateStatus: ->
@@ -54,7 +61,7 @@ module.exports = class Screen2View extends Backbone.View
             $('.nav-controls').addClass('readyForNext')
 
     close: ->
-        # @map1.close()
+        @map.close()
         @orbit.close()
         $(@el).empty()
         @unbind()

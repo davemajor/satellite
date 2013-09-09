@@ -28,6 +28,7 @@ module.exports = class Screen5View extends Backbone.View
         $('#diagram').html @orbit.render().el
         @orbit.model.on 'change', @updateStatus, this
         @orbit.model.trigger 'change'
+        @updateOrbit()
 
         $('.slider').slider(
             'orientation': 'vertical'
@@ -43,6 +44,7 @@ module.exports = class Screen5View extends Backbone.View
             calc = new Calc(Satellite.Session.get('expression'))
             speed = calc.eval(value)
         else
+            value = 120
             speed = Satellite.Session.get('speed')
         @orbit.model.set
             altitude: value
@@ -59,6 +61,7 @@ module.exports = class Screen5View extends Backbone.View
         $(@el).empty()
         @unbind()
         @undelegateEvents()
+
     next: ->
         Satellite.AppView.trigger 'next', {fromView: @}
 

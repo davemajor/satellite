@@ -2,7 +2,6 @@ OrbitDiagramView = require 'views/orbitDiagram'
 OrbitModel = require 'models/orbit'
 MapView = require 'views/map'
 
-
 module.exports = class Screen1View extends Backbone.View
     className: 'screen1'
     template: require 'views/templates/screen1'

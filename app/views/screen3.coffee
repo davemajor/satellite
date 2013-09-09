@@ -1,5 +1,6 @@
 OrbitDiagramView = require 'views/orbitDiagram'
 OrbitModel = require 'models/orbit'
+MapView = require 'views/map'
 
 module.exports = class Screen3View extends Backbone.View
     className: 'screen3'
@@ -20,6 +21,12 @@ module.exports = class Screen3View extends Backbone.View
                 center: {x: 150, y: 150}
         )
         $('#diagram').html @orbit.render().el
+
+        @map = new MapView
+            zoom: 6
+            orbit: @orbit.model
+        $('#map').html @map.render().el
+
         @orbit.model.trigger 'change'
 
     didChangeTextarea: (evt) ->
@@ -29,7 +36,7 @@ module.exports = class Screen3View extends Backbone.View
             $('.action-next').attr 'disabled', true
 
     close: ->
-        # @map1.close()
+        @map.close()
         @orbit.close()
         $(@el).empty()
         @unbind()
